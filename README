@@ -1,0 +1,16 @@
+Vaccine Pipeline Modelling
+--------------------------
+
+The model takes data on existing COVID-19 vaccines in various stages of clinical trials and expert opinions as to their likely success and predicts how many vaccines will get proper regulatory approval and on what timescales. The model uses Monte Carlo techniques to randomly decide an outcome given the input paramaters.
+
+usage: models.py [-h] [--vaccines VACCINES] [--params PARAMS] [--output OUTPUT] [--summary SUMMARY] [--csv CSV]
+
+Run Vaccine Pipeline Model
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --vaccines VACCINES  vaccines file
+  --params PARAMS      parameters file
+  --output OUTPUT      output file
+  --summary SUMMARY    summary file
+  --csv CSV            trials CSV file
