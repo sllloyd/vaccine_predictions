@@ -35,6 +35,7 @@ import datetime
 import time
 import traceback
 import argparse
+import manufacturing
 
 #-------------------------------------------------------------------
 
@@ -89,6 +90,7 @@ def runModelsMain():
 		# Do some general initialisation
 		
 		initialise(vaccines, params)
+		manufacturing.initialise(vaccines, params)
 
 		# Set up arrays for results
 								
@@ -308,24 +310,32 @@ def runModelsMain():
 
 			# Get the data for the trials csv file
 			
-			if args.csv:
-				for j in range(len(vaccines)):
-					if len(ended[j]) == 0: continue
-					entry = [t+1, int(vaccines[j]['number']), '', '', '', '']
-					got = False
-					for phase in range(1, len(params['phases'])):
-						if phase in ended[j]:
-							entry[phase+1] = ended[j][phase]
-							got = True
+#			if args.csv:
+			trialData = {}
+			for j in range(len(vaccines)):
+				if len(ended[j]) == 0: continue
+				entry = [t+1, int(vaccines[j]['number']), '', '', '', '']
+				got = False
+				for phase in range(1, len(params['phases'])):
+					if phase in ended[j]:
+						entry[phase+1] = ended[j][phase]
+						got = True
+			
+				if not got: continue
+				for i in range(len(entry)):
+					if i > 0: trialResults += ','
+					trialResults += str(entry[i])
 				
-					if not got: continue
-					for i in range(len(entry)):
-						if i > 0: trialResults += ','
-						trialResults += str(entry[i])
+				if not 'try' in trialData:
+					trialData['try'] = t+1
+					trialData['vaccines'] = []
 					
-					trialResults += "\n";
+				trialData['vaccines'].append(entry[1:])
+				trialResults += "\n";
 			
 			approvals.append(approved)
+			
+			manufacturing.runTrial(trialData)
 			
 		# End loop over tries
 				
@@ -517,7 +527,9 @@ def runModelsMain():
 		checks = []
 		if params['cross_check']:
 			checks = crossCheck(vaccines, params)
-					
+		
+		manufacturingOutput = manufacturing.getOutput()			
+		
 		# Collect the output
 
 		data['time'] = params['time_now']
@@ -528,6 +540,7 @@ def runModelsMain():
 		data['best'] = bestVaccines
 		data['analysis'] = analysis
 		data['checks'] = checks
+		data['manufacturing'] = manufacturingOutput
 		
 		status = 0
 

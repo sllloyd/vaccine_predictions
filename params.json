@@ -1,0 +1,238 @@
+{
+    "cross_check": 1,
+    "version": 17,
+    "phases": [
+        "Pre-Clinical",
+        "Phase I",
+        "Phase II",
+        "Phase III",
+        "Approval"
+    ],
+    "all_phases": [
+        "Pre-Clinical",
+        "Phase I",
+        "Phase I\/II",
+        "Phase II",
+        "Phase II\/III",
+        "Phase III",
+        "Approval",
+        "Approved"
+    ],
+    "platforms": [
+        "Live-attenuated",
+        "Protein subunit",
+        "Inactivated",
+        "RNA",
+        "Non-replicating viral vector",
+        "Replicating viral vector",
+        "DNA",
+        "Other",
+        "Unknown"
+    ],
+    "cepi": [
+        49,
+        110,
+        123,
+        85,
+        118
+    ],
+    "ows": [
+        166,
+        150,
+        49,
+        39,
+        110,
+        115
+    ],
+    "platform_correlations": [
+        "None",
+        "Low",
+        "Medium",
+        "Strong"
+    ],
+    "funding_overlaps": {
+        "simult": "Almost simultaneous",
+        "mostly": "Mostly overlapped",
+        "phases12": "Phases I & II overlapped",
+        "phases23": "Phases II & III overlapped",
+        "consec": "Consecutive",
+        "gaps": "Gaps between phases"
+    },
+    "timeline_factors": {
+        "much_faster": "Much faster",
+        "faster": "Faster",
+        "slightly_faster": "Slightly faster",
+        "normal": "Normal",
+        "slightly_slower": "Slightly slower",
+        "slower": "Slower",
+        "much_slower": "Much slower",
+        "very_much_slower": "Very much slower"
+    },
+    "trials_csv_version": 1,
+    "funding_categories": [
+        "Large external funding",
+        "Some external funding",
+        "Large Pharma",
+        "Medium Pharma",
+        "Bio-tech\/Academic"
+    ],
+    "monthsTableSkip": 6,
+    "rankTableMax": 10,
+    "bestVaccinesMax": 10,
+    "tries": 100,
+    "months": 36,
+    "option": "Normal",
+    "pos_factor": 1.2,
+    "timeline_factor": 1.2,
+    "best_timeline": [
+        3,
+        2,
+        3,
+        3,
+        1
+    ],
+    "likely_timeline": [
+        6,
+        4,
+        5,
+        9,
+        3
+    ],
+    "worst_timeline": [
+        12,
+        6,
+        8,
+        18,
+        6
+    ],
+    "phase_success": [
+        0.66,
+        0.78,
+        0.66,
+        0.46,
+        0.74
+    ],
+    "platform_pos": [
+        0.37,
+        0.64,
+        0.39,
+        0.48,
+        0.53,
+        0.45,
+        0.21,
+        0.05,
+        0.02
+    ],
+    "platform_timeline": [
+        "much_slower",
+        "normal",
+        "faster",
+        "slightly_faster",
+        "slightly_slower",
+        "slower",
+        "slower",
+        "much_slower",
+        "much_slower"
+    ],
+    "platform_correlation": [
+        "Medium",
+        "Medium",
+        "Medium",
+        "Low",
+        "Strong",
+        "Strong",
+        "Medium",
+        "None",
+        "None"
+    ],
+    "funding_pos": [
+        1.1,
+        1,
+        1,
+        0.95,
+        0.1
+    ],
+    "funding_timeline": [
+        "faster",
+        "normal",
+        "normal",
+        "slower",
+        "very_much_slower"
+    ],
+    "funding_overlap": [
+        "simult",
+        "mostly",
+        "mostly",
+        "phases23",
+        "gaps"
+    ],
+    "funding_tech_failure": [
+        1,
+        1,
+        1,
+        0.8,
+        0
+    ],
+    "approval_limit": 3,
+    "approval_pos": 0.85,
+    "approval_timeline": 1.1,
+    "funding_overlap_phase_overlap": {
+        "simult": 1,
+        "mostly": 2,
+        "phases12": 1,
+        "phases23": 1,
+        "consec": 0,
+        "gaps": 0
+    },
+    "funding_overlap_phase_gap": {
+        "simult": 0,
+        "mostly": 0,
+        "phases12": 1,
+        "phases23": 1,
+        "consec": 1,
+        "gaps": 6
+    },
+    "funding_overlap_phase1_start": {
+        "simult": 1,
+        "mostly": 1,
+        "phases12": 1,
+        "phases23": 1,
+        "consec": 1,
+        "gaps": 1
+    },
+    "funding_overlap_approval_start": {
+        "simult": 1,
+        "mostly": 1,
+        "phases12": 1,
+        "phases23": 1,
+        "consec": 1,
+        "gaps": 1
+    },
+    "platform_correlation_values": {
+        "None": 0,
+        "Low": 0.1,
+        "Medium": 0.25,
+        "Strong": 0.5
+    },
+    "timeline_factor_values": {
+        "much_faster": 0.5,
+        "faster": 0.75,
+        "slightly_faster": 0.9,
+        "normal": 1,
+        "slightly_slower": 1.1,
+        "slower": 1.33,
+        "much_slower": 2,
+        "very_much_slower": 3
+    },
+    "phase3_slowdown_fract": 0.3,
+    "phase3_slowdown_factor": 1.5,
+    "phase3_limit": 6,
+    "phase3_action": "Slow Down",
+    "phase3_limit_factor": 1.5,
+    "bio_buyout_fract": 1,
+    "do_update_pos": 1,
+    "do_update_approval": 1,
+    "do_limit_phase3": 1,
+    "do_buyout_bio": 1,
+    "do_ignore_future_dates": 1
+}
