@@ -391,7 +391,10 @@ def runModelsMain():
 			average['first_month'][month] = Stats.efficiency('First Month ' + str(month), tries)
 		
 		for j in range(len(vaccines)):
-			vaccines[j]['corr'] = [0] * len(vaccines)
+#			vaccines[j]['corr'] = [0] * len(vaccines)
+			vaccines[j]['corr'] = {}
+			for k in range(len(vaccines)):
+				vaccines[j]['corr'][vaccines[k]['id']] = 0
 			
 		for i in range(len(approvals)):
 			for j in range(len(approvals[i])):
@@ -399,8 +402,8 @@ def runModelsMain():
 					vaccines[approvals[i][j]]['corr'][vaccines[approvals[i][k]]['id']] += 1
 		for j in range(len(vaccines)):
 			for k in range(len(vaccines)):
-				vaccines[j]['corr'][k] = vaccines[j]['corr'][k]/float(params['tries'])		
-		
+				vaccines[j]['corr'][vaccines[k]['id']] = vaccines[j]['corr'][vaccines[k]['id']]/float(params['tries'])		
+
 		# Gather analysis data
 		
 		analysis = {}
@@ -494,7 +497,10 @@ def runModelsMain():
 			for phase in range(len(params['phases'])):
 				vaccine_output['finished'].append(vaccines[j]['finished'][phase])
 			vaccine_output['institutes'] = vaccines[j]['institutes'].replace("'", "")
-			vaccine_output['corr'] = vaccines[j]['corr'][:]
+			vaccine_output['corr'] = {}
+			for k in range(len(vaccines)):
+				vaccine_output['corr'][vaccines[k]['id']] = vaccines[j]['corr'][vaccines[k]['id']]
+#			vaccine_output['corr'] = vaccines[j]['corr'][:]
 			vaccine_output['cepi'] = vaccines[j]['cepi']
 			vaccine_output['ows'] = vaccines[j]['ows']
 			vaccine_outputs.append(vaccine_output)
