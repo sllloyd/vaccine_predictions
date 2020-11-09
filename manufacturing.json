@@ -1,0 +1,832 @@
+{
+    "Gantt Timelines (default)": {
+        "All Platform": {
+            "Low": 7,
+            "Most Likely": 11,
+            "High": 16
+        },
+        "DNA": {
+            "Low": 10,
+            "Most Likely": 16,
+            "High": 42
+        },
+        "RNA": {
+            "Low": 10,
+            "Most Likely": 16,
+            "High": 42
+        },
+        "Protein subunit": {
+            "Low": 10,
+            "Most Likely": 16,
+            "High": 42
+        },
+        "Inactivated": {
+            "Low": 10,
+            "Most Likely": 16,
+            "High": 42
+        },
+        "Live-attenuated": {
+            "Low": 10,
+            "Most Likely": 16,
+            "High": 42
+        },
+        "Non-replicating viral vector": {
+            "Low": 10,
+            "Most Likely": 16,
+            "High": 42
+        },
+        "Replicating viral vector": {
+            "Low": 10,
+            "Most Likely": 16,
+            "High": 42
+        },
+        "Other": {
+            "Low": 10,
+            "Most Likely": 16,
+            "High": 42
+        }
+    },
+    "Generic Gantt": {
+        "0": {
+            "Task ID": 1,
+            "Predecessor": 0,
+            "Group": "R&D activities",
+            "Activities": "Pre-clinical",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "1": {
+            "Task ID": 2,
+            "Predecessor": 1,
+            "Group": "R&D activities",
+            "Activities": "Phase I",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "2": {
+            "Task ID": 3,
+            "Predecessor": -1,
+            "Group": "R&D activities",
+            "Activities": "Clinical trials manufacturing",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "3": {
+            "Task ID": 4,
+            "Predecessor": 2,
+            "Group": "R&D activities",
+            "Activities": "Phase II",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "4": {
+            "Task ID": 5,
+            "Predecessor": 4,
+            "Group": "R&D activities",
+            "Activities": "Phase III",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "5": {
+            "Task ID": 6,
+            "Predecessor": 5,
+            "Group": "R&D activities",
+            "Activities": "Vaccine regulatory approval",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "6": {
+            "Task ID": 7,
+            "Predecessor": 0,
+            "Group": "Manufacturing activities",
+            "Activities": "Start manufacturing activities at risk",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "7": {
+            "Task ID": 8,
+            "Predecessor": 7,
+            "Group": "Manufacturing activities",
+            "Activities": "Scale up and and process development",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 120,
+            "Most Likely": 180,
+            "High": 360
+        },
+        "8": {
+            "Task ID": 9,
+            "Predecessor": -1,
+            "Group": "Drug substance manufacturing site ",
+            "Activities": "Design and Build - to OQ complete",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 450,
+            "Most Likely": 540,
+            "High": 630
+        },
+        "9": {
+            "Task ID": 10,
+            "Predecessor": 0,
+            "Group": "Drug substance manufacturing site ",
+            "Activities": "Modify - to OQ complete",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 90,
+            "Most Likely": 180,
+            "High": 270
+        },
+        "10": {
+            "Task ID": 11,
+            "Predecessor": -1,
+            "Group": "Drug substance manufacturing site ",
+            "Activities": "Existing",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "11": {
+            "Task ID": 12,
+            "Predecessor": 10,
+            "Group": "Drug substance manufacturing site ",
+            "Activities": "DS site ready to start processing",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "12": {
+            "Task ID": 13,
+            "Predecessor": 8,
+            "Group": "Drug substance manufacturing site ",
+            "Activities": "Technology transfer",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 90,
+            "Most Likely": 180,
+            "High": 450
+        },
+        "13": {
+            "Task ID": 14,
+            "Predecessor": "12,13",
+            "Group": "Drug substance manufacturing site ",
+            "Activities": "DS Process Validation",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 60,
+            "Most Likely": 90,
+            "High": 120
+        },
+        "14": {
+            "Task ID": 15,
+            "Predecessor": 14,
+            "Group": "Drug substance manufacturing site ",
+            "Activities": "Ph III DS clinical trials manufacturing",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 30,
+            "Most Likely": 60,
+            "High": 90
+        },
+        "15": {
+            "Task ID": 16,
+            "Predecessor": "14,15",
+            "Group": "Drug substance manufacturing site ",
+            "Activities": "Pre-approval inspection",
+            "Type": "Static",
+            "Value": 7,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "16": {
+            "Task ID": 17,
+            "Predecessor": 16,
+            "Group": "Drug substance manufacturing site ",
+            "Activities": "Manufacturing License ",
+            "Type": "Static",
+            "Value": 30,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "17": {
+            "Task ID": 18,
+            "Predecessor": "6,17",
+            "Group": "Drug substance manufacturing site ",
+            "Activities": "Start commercial production",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "18": {
+            "Task ID": 19,
+            "Predecessor": -1,
+            "Group": "Drug product manufacturing site",
+            "Activities": "Design and Build - to OQ complete",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 630,
+            "Most Likely": 720,
+            "High": 810
+        },
+        "19": {
+            "Task ID": 20,
+            "Predecessor": -1,
+            "Group": "Drug product manufacturing site",
+            "Activities": "Modify - to OQ complete",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 120,
+            "Most Likely": 240,
+            "High": 360
+        },
+        "20": {
+            "Task ID": 21,
+            "Predecessor": 0,
+            "Group": "Drug product manufacturing site",
+            "Activities": "Existing",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "21": {
+            "Task ID": 22,
+            "Predecessor": -1,
+            "Group": "Drug product manufacturing site",
+            "Activities": "DP site ready to start processing",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "22": {
+            "Task ID": 23,
+            "Predecessor": "8,21",
+            "Group": "Drug product manufacturing site",
+            "Activities": "DP technology transfer",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 90,
+            "Most Likely": 180,
+            "High": 450
+        },
+        "23": {
+            "Task ID": 24,
+            "Predecessor": 23,
+            "Group": "Drug product manufacturing site",
+            "Activities": "DP Process Validation",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 120,
+            "Most Likely": 180,
+            "High": 240
+        },
+        "24": {
+            "Task ID": 25,
+            "Predecessor": "14,24",
+            "Group": "Drug product manufacturing site",
+            "Activities": "Ph III DP clinical trials manufacturing",
+            "Type": "Triangular",
+            "Value": 0,
+            "Low": 30,
+            "Most Likely": 60,
+            "High": 90
+        },
+        "25": {
+            "Task ID": 26,
+            "Predecessor": "14,15,25",
+            "Group": "Drug product manufacturing site",
+            "Activities": "Pre-approval inspection",
+            "Type": "Static",
+            "Value": 7,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "26": {
+            "Task ID": 27,
+            "Predecessor": 26,
+            "Group": "Drug product manufacturing site",
+            "Activities": "Manufacturing License ",
+            "Type": "Static",
+            "Value": 30,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "27": {
+            "Task ID": 28,
+            "Predecessor": "6,25,27",
+            "Group": "Drug product manufacturing site",
+            "Activities": "Start DP production",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        },
+        "28": {
+            "Task ID": 29,
+            "Predecessor": -1,
+            "Group": "Drug product manufacturing site",
+            "Activities": "Regulatory approval, manufacturing",
+            "Type": "Static",
+            "Value": 0,
+            "Low": 0,
+            "Most Likely": 0,
+            "High": 0
+        }
+    },
+    "Pri Capacity": {
+        "1": {
+            "India": {
+                "DNA": 16.958333333333336
+            },
+            "USA": {
+                "DNA": 30.500000000000004
+            },
+            "France": {
+                "DNA": 0.0
+            },
+            "Germany": {
+                "DNA": 21.0
+            },
+            "Spain": {
+                "DNA": 10.0
+            },
+            "Belgium": {
+                "DNA": 31.875
+            },
+            "Argentina": {
+                "DNA": 0.0
+            },
+            "Indonesia": {
+                "DNA": 0.0
+            },
+            "Japan": {
+                "DNA": 1.25
+            },
+            "Portugal": {
+                "DNA": 0.0
+            },
+            "Switzerland": {
+                "DNA": 0.0
+            },
+            "UK": {
+                "DNA": 0.0
+            },
+            "Poland": {
+                "DNA": 0.0
+            },
+            "Italy": {
+                "DNA": 0.0
+            },
+            "Canada": {
+                "DNA": 0.0
+            },
+            "Bangladesh": {
+                "DNA": 0.0
+            },
+            "Saudi Arabia": {
+                "DNA": 0.0
+            },
+            "South Korea": {
+                "DNA": 0.0
+            },
+            "Vietnam": {
+                "DNA": 0.0
+            },
+            "Brazil": {
+                "DNA": 0.0
+            },
+            "South Africa": {
+                "DNA": 0.0
+            },
+            "China": {
+                "DNA": 0.0
+            },
+            "Pfizer/BioNTech": {
+                "DNA": 0.0
+            },
+            "CureVac": {
+                "DNA": 0.0
+            },
+            "Moderna": {
+                "DNA": 0.0
+            }
+        },
+        "2": {
+            "India": {
+                "Protein subunit": 2580.7291666666665,
+                "Non-replicating viral vector": 5161.458333333333,
+                "Replicating viral vector": 5161.458333333333,
+                "Other": 2828.4791666666665
+            },
+            "USA": {
+                "Protein subunit": 1459.3749999999998,
+                "Non-replicating viral vector": 2918.7499999999995,
+                "Replicating viral vector": 2918.7499999999995,
+                "Other": 1599.4749999999997
+            },
+            "France": {
+                "Protein subunit": 593.75,
+                "Non-replicating viral vector": 1187.5,
+                "Replicating viral vector": 1187.5,
+                "Other": 650.75
+            },
+            "Germany": {
+                "Protein subunit": 359.375,
+                "Non-replicating viral vector": 718.75,
+                "Replicating viral vector": 718.75,
+                "Other": 393.875
+            },
+            "Spain": {
+                "Protein subunit": 281.25,
+                "Non-replicating viral vector": 562.5,
+                "Replicating viral vector": 562.5,
+                "Other": 308.25
+            },
+            "Belgium": {
+                "Protein subunit": 234.375,
+                "Non-replicating viral vector": 468.75,
+                "Replicating viral vector": 468.75,
+                "Other": 256.875
+            },
+            "Argentina": {
+                "Protein subunit": 234.375,
+                "Non-replicating viral vector": 468.75,
+                "Replicating viral vector": 468.75,
+                "Other": 256.875
+            },
+            "Indonesia": {
+                "Protein subunit": 39.0625,
+                "Non-replicating viral vector": 78.125,
+                "Replicating viral vector": 78.125,
+                "Other": 42.8125
+            },
+            "Japan": {
+                "Protein subunit": 15.625,
+                "Non-replicating viral vector": 31.25,
+                "Replicating viral vector": 31.25,
+                "Other": 17.125
+            },
+            "Portugal": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "Switzerland": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "UK": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "Poland": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "Italy": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "Canada": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "Bangladesh": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "Saudi Arabia": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "South Korea": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "Vietnam": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "Brazil": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "South Africa": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "China": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "Pfizer/BioNTech": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "CureVac": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            },
+            "Moderna": {
+                "Protein subunit": 0.0,
+                "Non-replicating viral vector": 0.0,
+                "Replicating viral vector": 0.0,
+                "Other": 0.0
+            }
+        },
+        "3": {
+            "India": {
+                "Inactivated": 4000.0000000000005,
+                "Live-attenuated": 4000.0000000000005
+            },
+            "USA": {
+                "Inactivated": 1000.0000000000001,
+                "Live-attenuated": 1000.0000000000001
+            },
+            "France": {
+                "Inactivated": 75.0,
+                "Live-attenuated": 75.0
+            },
+            "Germany": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Spain": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Belgium": {
+                "Inactivated": 250.00000000000003,
+                "Live-attenuated": 250.00000000000003
+            },
+            "Argentina": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Indonesia": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Japan": {
+                "Inactivated": 150.0,
+                "Live-attenuated": 150.0
+            },
+            "Portugal": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Switzerland": {
+                "Inactivated": 1012.5000000000001,
+                "Live-attenuated": 1012.5000000000001
+            },
+            "UK": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Poland": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Italy": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Canada": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Bangladesh": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Saudi Arabia": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "South Korea": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Vietnam": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Brazil": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "South Africa": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "China": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Pfizer/BioNTech": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "CureVac": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            },
+            "Moderna": {
+                "Inactivated": 0.0,
+                "Live-attenuated": 0.0
+            }
+        },
+        "5": {
+            "India": {
+                "RNA": 0.0
+            },
+            "USA": {
+                "RNA": 0.12
+            },
+            "France": {
+                "RNA": 0.0
+            },
+            "Germany": {
+                "RNA": 0.0
+            },
+            "Spain": {
+                "RNA": 0.0
+            },
+            "Belgium": {
+                "RNA": 0.12
+            },
+            "Argentina": {
+                "RNA": 0.0
+            },
+            "Indonesia": {
+                "RNA": 0.0
+            },
+            "Japan": {
+                "RNA": 0.0
+            },
+            "Portugal": {
+                "RNA": 0.13666666666666666
+            },
+            "Switzerland": {
+                "RNA": 0.0
+            },
+            "UK": {
+                "RNA": 0.0
+            },
+            "Poland": {
+                "RNA": 0.0
+            },
+            "Italy": {
+                "RNA": 0.0
+            },
+            "Canada": {
+                "RNA": 0.0
+            },
+            "Bangladesh": {
+                "RNA": 0.0
+            },
+            "Saudi Arabia": {
+                "RNA": 0.0
+            },
+            "South Korea": {
+                "RNA": 0.0
+            },
+            "Vietnam": {
+                "RNA": 0.0
+            },
+            "Brazil": {
+                "RNA": 0.0
+            },
+            "South Africa": {
+                "RNA": 0.0
+            },
+            "China": {
+                "RNA": 0.0
+            },
+            "Pfizer/BioNTech": {
+                "RNA": 108.33333333333333
+            },
+            "CureVac": {
+                "RNA": 91.66666666666667
+            },
+            "Moderna": {
+                "RNA": 79.16666666666667
+            }
+        }
+    },
+    "Sec Capacity": {
+        "China": 885.6033333333332,
+        "USA": 1299.0,
+        "India": 458.29200000000003,
+        "Brazil": 75.4,
+        "Thailand": 151.27333333333334,
+        "France": 116.86666666666666,
+        "Vietnam": 141.87,
+        "Bangladesh": 34.92666666666666,
+        "Australia": 50.693333333333335,
+        "Russia": 63.583333333333336,
+        "UK": 50.0,
+        "Japan": 56.666666666666664,
+        "Spain": 18.32,
+        "Indonesia": 16.666666666666668,
+        "South Korea": 80.10666666666665,
+        "Germany": 89.33333333333333,
+        "Belgium": 77.86666666666666,
+        "South Africa": 57.12,
+        "Argentina": 24.706666666666667,
+        "Denmark": 23.333333333333332,
+        "Austria": 8.333333333333334,
+        "Bulgaria": 0.0,
+        "Finland": 5.033333333333333,
+        "Ireland": 16.666666666666668,
+        "Italy": 33.333333333333336,
+        "Luxemburg": 8.333333333333334,
+        "Netherlands": 41.666666666666664,
+        "Switzerland": 100.0,
+        "Canada": 75.0,
+        "Mexico": 8.333333333333334,
+        "Israel": 16.666666666666668,
+        "Iran": 8.333333333333334,
+        "Malaysia": 25.0,
+        "New Zealand": 16.666666666666668,
+        "Pakistan": 8.333333333333334,
+        "Saudi Arabia": 25.0,
+        "Sri Lanka": 16.666666666666668,
+        "Taiwan": 50.0,
+        "Turkey": 16.666666666666668,
+        "Senegal": 16.666666666666668
+    },
+    "Capacity Category": {
+        "DNA": 1,
+        "Inactivated": 3,
+        "Live-attenuated": 3,
+        "Non-replicating viral vector": 2,
+        "Replicating viral vector": 2,
+        "Protein subunit": 2,
+        "Other": 2,
+        "RNA": 5
+    }
+}

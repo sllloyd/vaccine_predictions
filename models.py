@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
 #
 # Vaccine Predictions
@@ -35,6 +35,7 @@ import datetime
 import time
 import traceback
 import argparse
+import functools
 import manufacturing
 
 #-------------------------------------------------------------------
@@ -44,6 +45,8 @@ import manufacturing
 parser = argparse.ArgumentParser(description='Run Vaccine Pipeline Model')
 parser.add_argument('--vaccines', default='vaccines.json', help='vaccines file')
 parser.add_argument('--params', default='params.json', help='parameters file')
+parser.add_argument('--manufacturing', default='manufacturing.json', help='manufacturing data file')
+parser.add_argument('--categories', default='categories.json', help='manufacturing categories file')
 parser.add_argument('--output', default='output.json', help='output file')
 parser.add_argument('--summary', default='summary.json', help='summary file')
 parser.add_argument('--csv', default='', help='trials CSV file')
@@ -51,12 +54,13 @@ args = parser.parse_args()
 
 #-------------------------------------------------------------------
 
-def setArgs(varg, parg, oarg, sarg, cargs=''):
+def setArgs(varg, parg, marg, oarg, sarg, cargs=''):
 
 	# Set arguments when using driver program
 	
 	args.vaccines = varg
 	args.params = parg
+	args.manufacturing = marg
 	args.output = oarg
 	args.summary = sarg
 	args.csv = cargs
@@ -90,7 +94,9 @@ def runModelsMain():
 		# Do some general initialisation
 		
 		initialise(vaccines, params)
-		manufacturing.initialise(vaccines, params)
+#		manufacturing.initialise(vaccines, params)
+		if params['do_manufacturing']: manufacturing.initialise(params['manufacturing'], vaccines, args.manufacturing)
+#		if params['do_manufacturing']: manufacturing.initialise()
 
 		# Set up arrays for results
 								
@@ -174,7 +180,8 @@ def runModelsMain():
 				
 				# Main loop over vaccines (randomly)
 				
-				inds = range(len(vaccines))
+#				inds = range(len(vaccines))
+				inds = list(range(len(vaccines)))
 				random.shuffle(inds)
 				for i in range(len(inds)):
 					j = inds[i]
@@ -335,7 +342,7 @@ def runModelsMain():
 			
 			approvals.append(approved)
 			
-			manufacturing.runTrial(trialData)
+			if params['do_manufacturing']: manufacturing.runTrial(trialData)
 			
 		# End loop over tries
 				
@@ -476,6 +483,9 @@ def runModelsMain():
 			
 		# Sort vaccines by success
 		
+		def cmp(a, b):
+			return (a > b) - (a < b)
+				
 		def sortByRank(a, b):
 			for phase in range(len(params['phases'])):
 				i = len(params['phases']) - phase - 1
@@ -485,7 +495,8 @@ def runModelsMain():
 				if comp != 0: return comp
 			return comp
 			
-		vaccines.sort(sortByRank)
+#		vaccines.sort(sortByRank)
+		vaccines.sort(key=functools.cmp_to_key(sortByRank))
 
 		# Copy vaccines to output array
 		
@@ -534,8 +545,15 @@ def runModelsMain():
 		if params['cross_check']:
 			checks = crossCheck(vaccines, params)
 		
-		manufacturingOutput = manufacturing.getOutput()			
-		
+		manufacturingOutput = []
+		if params['do_manufacturing']:
+			try: 
+				outp = manufacturing.getOutput()
+				manufacturingOutput = {'timeline_bar': outp[0], 'target1_pie': outp[1], 'target2_pie': outp[2], 'target3_pie': outp[3], 'target4_pie': outp[4], 'target1_hist': outp[5], 'target2_hist': outp[6], 'target3_hist': outp[7], 'target4_hist': outp[8], 'cum_line': outp[9], 'highlights': outp[10]}
+				print (manufacturingOutput)
+			except:
+				print ('Manufacturing failed')
+				 
 		# Collect the output
 
 		data['time'] = params['time_now']
@@ -555,7 +573,8 @@ def runModelsMain():
 		
 	except:
 		data['traceback'] = 'Error: ' + "\n" + traceback.format_exc()
-		print 'Error:', traceback.format_exc()
+#		print 'Error:', traceback.format_exc()
+		print ('Error:', traceback.format_exc())
 		status = 1
 
 #	print status
@@ -1099,8 +1118,10 @@ def initialiseVaccine(vaccine, params, startPhase = 0, thisMonth = 0, fundingKey
 
 			if params['do_buyout_bio'] and fundingKey == 4:
 				vaccine['pos'][phase] = multiplyPos(vaccine['pos'][phase], params['funding_pos'][fundingKey]**(1.0/2.0))
+				vaccine['pos'][phase] = multiplyPos(vaccine['pos'][phase], params['option_pos_multiplier']**(1.0/2.0))
 			else:
 				vaccine['pos'][phase] = multiplyPos(vaccine['pos'][phase], params['funding_pos'][fundingKey]**(1.0/5.0))
+				vaccine['pos'][phase] = multiplyPos(vaccine['pos'][phase], params['option_pos_multiplier']**(1.0/5.0))
 			
 			vaccine['overall_pos'] = vaccine['overall_pos'] * vaccine['pos'][phase]
 
@@ -1129,7 +1150,7 @@ def initialiseVaccine(vaccine, params, startPhase = 0, thisMonth = 0, fundingKey
 			 
 			if int(vaccine['end_dates'][phase]) > 0 and vaccine['end'][phase] > 0:
 				length = vaccine['end'][phase] - vaccine['start'][phase]
-				diff = length - vaccines[j]['best'][phase]
+				diff = length - vaccine['best'][phase]
 				vaccine['best'][phase] = vaccine['best'][phase] + diff
 				vaccine['likely'][phase] = vaccine['likely'][phase] + diff
 				vaccine['worst'][phase] = vaccine['worst'][phase] + diff
@@ -1187,7 +1208,8 @@ def jwrite(values, filename, indent=4):
 	
 	j = json.dumps(values, indent=indent)
 	f = open(filename, 'w')
-	print >> f, j
+#	print >> f, j
+	f.write(j)
 	f.close()
 
 #-------------------------------------------------------------------
@@ -1196,7 +1218,8 @@ def limitPhase3(inPhase3, month, vaccines, params):
 
 	# Limits or slows down the vaccines entering Phase III
 	
-	inds = range(len(vaccines))
+#	inds = range(len(vaccines))
+	inds = list(range(len(vaccines)))
 	random.shuffle(inds)
 	for i in range(len(inds)):
 		j = inds[i]

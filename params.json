@@ -1,6 +1,6 @@
 {
     "cross_check": 1,
-    "version": 17,
+    "version": 21,
     "phases": [
         "Pre-Clinical",
         "Phase I",
@@ -34,7 +34,11 @@
         110,
         123,
         85,
-        118
+        139,
+        145,
+        166,
+        5,
+        154
     ],
     "ows": [
         166,
@@ -42,7 +46,9 @@
         49,
         39,
         110,
-        115
+        115,
+        138,
+        51
     ],
     "platform_correlations": [
         "None",
@@ -234,5 +240,161 @@
     "do_update_approval": 1,
     "do_limit_phase3": 1,
     "do_buyout_bio": 1,
-    "do_ignore_future_dates": 1
+    "do_ignore_future_dates": 1,
+    "do_manufacturing": 1,
+    "manufacturing": {
+        "Doses needed": {
+            "Group 1": 0.05,
+            "Group 2": 0.65,
+            "Group 3": 1.15,
+            "Group 4": 6.15,
+            "Percentage of drug wastage": 15,
+            "Number of doses per vaccine": 2
+        },
+        "Gantt Timelines": {
+            "All Platform": {
+                "Low": 7,
+                "Most Likely": 11,
+                "High": 16
+            },
+            "Live-attenuated": {
+                "Low": 10,
+                "Most Likely": 16,
+                "High": 34
+            },
+            "Protein subunit": {
+                "Low": 10,
+                "Most Likely": 16,
+                "High": 34
+            },
+            "Inactivated": {
+                "Low": 10,
+                "Most Likely": 16,
+                "High": 34
+            },
+            "RNA": {
+                "Low": 10,
+                "Most Likely": 16,
+                "High": 54
+            },
+            "Non-replicating viral vector": {
+                "Low": 10,
+                "Most Likely": 16,
+                "High": 42
+            },
+            "Replicating viral vector": {
+                "Low": 10,
+                "Most Likely": 16,
+                "High": 42
+            },
+            "DNA": {
+                "Low": 10,
+                "Most Likely": 16,
+                "High": 42
+            },
+            "Other": {
+                "Low": 10,
+                "Most Likely": 16,
+                "High": 42
+            }
+        },
+        "Pri Input": {
+            "Live-attenuated": {
+                "Lowest Volume V (m3)": 701,
+                "Most Likely Volume V (m3)": 779,
+                "Highest Volume V (m3)": 856,
+                "Doses per litre of bioreactor volume (N_dv)": 4000,
+                "Batches per year (B)": 25,
+                "Doses for most likely volume (Million Doses per month) N_v": 6491.666666666667
+            },
+            "Protein subunit": {
+                "Lowest Volume V (m3)": 1002,
+                "Most Likely Volume V (m3)": 1113,
+                "Highest Volume V (m3)": 1225,
+                "Doses per litre of bioreactor volume (N_dv)": 2500,
+                "Batches per year (B)": 25,
+                "Doses for most likely volume (Million Doses per month) N_v": 5796.875
+            },
+            "Inactivated": {
+                "Lowest Volume V (m3)": 701,
+                "Most Likely Volume V (m3)": 779,
+                "Highest Volume V (m3)": 856,
+                "Doses per litre of bioreactor volume (N_dv)": 4000,
+                "Batches per year (B)": 25,
+                "Doses for most likely volume (Million Doses per month) N_v": 6491.666666666667
+            },
+            "RNA": {
+                "Lowest Volume V (m3)": 150955,
+                "Most Likely Volume V (m3)": 167728,
+                "Highest Volume V (m3)": 184501,
+                "Doses per litre of bioreactor volume (N_dv)": 50,
+                "Batches per year (B)": 0,
+                "Doses for most likely volume (Million Doses per month) N_v": 279.5466666666667
+            },
+            "Non-replicating viral vector": {
+                "Lowest Volume V (m3)": 1002,
+                "Most Likely Volume V (m3)": 1113,
+                "Highest Volume V (m3)": 1225,
+                "Doses per litre of bioreactor volume (N_dv)": 5000,
+                "Batches per year (B)": 25,
+                "Doses for most likely volume (Million Doses per month) N_v": 11593.75
+            },
+            "Replicating viral vector": {
+                "Lowest Volume V (m3)": 1002,
+                "Most Likely Volume V (m3)": 1113,
+                "Highest Volume V (m3)": 1225,
+                "Doses per litre of bioreactor volume (N_dv)": 5000,
+                "Batches per year (B)": 25,
+                "Doses for most likely volume (Million Doses per month) N_v": 11593.75
+            },
+            "DNA": {
+                "Lowest Volume V (m3)": 241,
+                "Most Likely Volume V (m3)": 268,
+                "Highest Volume V (m3)": 295,
+                "Doses per litre of bioreactor volume (N_dv)": 200,
+                "Batches per year (B)": 25,
+                "Doses for most likely volume (Million Doses per month) N_v": 111.66666666666667
+            },
+            "Other": {
+                "Lowest Volume V (m3)": 1002,
+                "Most Likely Volume V (m3)": 1113,
+                "Highest Volume V (m3)": 1225,
+                "Doses per litre of bioreactor volume (N_dv)": 2740,
+                "Batches per year (B)": 25,
+                "Doses for most likely volume (Million Doses per month) N_v": 6353.375000000001
+            }
+        },
+        "Timelines by funding criteria": {
+            "Large external funding": {
+                "Gantt duration factor*": 1,
+                "Simultaneous tech transfer?": 1,
+                "Manufacturing start before approval?": 1
+            },
+            "Some external funding": {
+                "Gantt duration factor*": 1,
+                "Simultaneous tech transfer?": 1,
+                "Manufacturing start before approval?": 1
+            },
+            "Large Pharma": {
+                "Gantt duration factor*": 1,
+                "Simultaneous tech transfer?": 1,
+                "Manufacturing start before approval?": 1
+            },
+            "Medium Pharma": {
+                "Gantt duration factor*": 1,
+                "Simultaneous tech transfer?": 1,
+                "Manufacturing start before approval?": 0
+            },
+            "Bio-tech\/Academic": {
+                "Gantt duration factor*": 1,
+                "Simultaneous tech transfer?": 1,
+                "Manufacturing start before approval?": 0
+            }
+        },
+        "Sec Input": {
+            "Lowest Available Capacity (million doses\/month)": 1061,
+            "Most Likely Available Capacity (million doses\/month)": 1327,
+            "Highest Available Capacity (million doses\/month)": 4268
+        }
+    }
 }
