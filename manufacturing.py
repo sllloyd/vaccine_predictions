@@ -7,23 +7,23 @@ Vaccines Manufacturing Model
 Bryden Wood
 License: MIT, see full license in LICENSE.txt
 --------------------------------------------------------------------------------
-Date: 2020-11-06
+Date: 2020-10-XX
 Authors:
     Jiabin Li
     Wynne Lim
     Stamatios Stamatiadis
     David Reader
 --------------------------------------------------------------------------------
-The purpose of the manufacturing model is to identify plausible scenarios 
-for how long it will take to manufacture vaccines to treat the populations 
-in need, and is split into two parts: Manufacturing Preparation, predicting 
-when primary (drug substance) and secondary (drug product) manufacturing 
-could start; and Manufacturing Capacity, predicting when enough doses are 
+The purpose of the manufacturing model is to identify plausible scenarios
+for how long it will take to manufacture vaccines to treat the populations
+in need, and is split into two parts: Manufacturing Preparation, predicting
+when primary (drug substance) and secondary (drug product) manufacturing
+could start; and Manufacturing Capacity, predicting when enough doses are
 made to meet the needs of the target populations. The model uses output from
-the Research and Development model, expert input and interviews, literature 
-and manufacturing capacity survey data as inputs. The model uses Monte Carlo 
-techniques to derive the dates at which the vaccine production targets will 
-be met and should therefore be run many times to smooth statistical 
+the Research and Development model, expert input and interviews, literature
+and manufacturing capacity survey data as inputs. The model uses Monte Carlo
+techniques to derive the dates at which the vaccine production targets will
+be met and should therefore be run many times to smooth statistical
 fluctuations.
 --------------------------------------------------------------------------------
 Developed for compatibility with Python 3.7.
@@ -51,7 +51,6 @@ import random
 import datetime
 import json
 import copy
-
 
 # --------------------------------------------------------------------------------
 
@@ -101,6 +100,7 @@ def initialise(params, vaccines, manufacturing):
 
     primary_cap, ratio_pri_v, ratio_pri_d = getPrimaryInput()
 
+
     # initialise the product info
     df_Categories = default['Capacity Category']
     df_product = getProduct(vaccines)
@@ -126,7 +126,6 @@ def initialise(params, vaccines, manufacturing):
     # define global variables
     output_summary = pd.DataFrame()
     cumulative_summary = pd.DataFrame()
-
 
 # --------------------------------------------------------------------------------
 
@@ -187,7 +186,6 @@ def getIteration(df_rnd):
 
     # generate iteration table
     tryID = df_rnd['try']
-
     v = df_rnd['vaccines']
     df = pd.DataFrame(v, columns=['Vaccine', 1, 2, 3, 'Approval (month)'])
     df['try'] = tryID
@@ -215,7 +213,6 @@ def getIteration(df_rnd):
 
     return df_iteration
 
-
 # --------------------------------------------------------------------------------
 
 def getProduct(vaccines):
@@ -234,7 +231,7 @@ def getProduct(vaccines):
 
     # filter the vaccine data
     data = vaccines
-    df_product = pd.DataFrame(columns=['Vaccine', 'Platform', 'Funding'])
+    df_product = pd.DataFrame(columns = ['Vaccine', 'Platform', 'Funding'])
 
     vaccines = []
     platforms = []
@@ -250,8 +247,8 @@ def getProduct(vaccines):
     df_product['Platform'] = platforms
     df_product['Funding'] = funding
 
-    return df_product
 
+    return df_product
 
 # --------------------------------------------------------------------------------
 
@@ -279,9 +276,11 @@ def getManufacturingStartTime(df_iteration):
 
     # get primary and secondary start time from scheduling (getSchedule) function
     for i in df_iteration.index.values:
+
         t = getSchedule(platforms[i], approval_months[i], funding[i])
         pri_starts[i] = t[0]
         sec_starts[i] = t[1]
+
 
     df_iteration['Primary Start'] = pri_starts
     df_iteration['Secondary Start'] = sec_starts
@@ -293,6 +292,7 @@ def getManufacturingStartTime(df_iteration):
 
 # --------------------------------------------------------------------------------
 def getPrimaryInput():
+
     '''
     This function extracts the relevant information pertaining to 'primary'
     from the dictionaries: 'default' and 'm_params' and
@@ -323,8 +323,7 @@ def getPrimaryInput():
 
     # dfPrimary['1'], dfPrimary['2'], dfPrimary['3'], dfPrimary['4'], dfPrimary['5'] = 0, 0, 0, 0, 0
 
-    platforms = ['DNA', 'Inactivated', 'Live-attenuated', 'Non-replicating viral vector', 'Replicating viral vector',
-                 'Protein subunit', 'Other', 'RNA']
+    platforms = ['DNA', 'Inactivated', 'Live-attenuated', 'Non-replicating viral vector', 'Replicating viral vector','Protein subunit', 'Other', 'RNA']
     platform_cat = ['DNA', 'Protein subunit', 'Inactivated', 'RNA']
 
     # dv -> default volume  dd -> default doses
@@ -340,11 +339,9 @@ def getPrimaryInput():
         ratio_pri_v[p] = [parameter[p][col] / parameter_dv[platform_cat.index(p)] for col in cols]
 
     for p in platforms:
-        ratio_pri_d[p] = parameter[p]['Doses for most likely volume (Million Doses per month) N_v'] / parameter_dd[
-            platforms.index(p)]
+        ratio_pri_d[p] = parameter[p]['Doses for most likely volume (Million Doses per month) N_v'] / parameter_dd[platforms.index(p)]
 
     return primary_cap, ratio_pri_v, ratio_pri_d
-
 
 # --------------------------------------------------------------------------------
 def primary(df_iteration):
@@ -384,8 +381,7 @@ def primary(df_iteration):
         category_cap = primary_cap_copy[str(i)]
         example_p = platform_cat[category_list.index(i)]
         for p in platforms_bycat[str(i)]:
-            ratio_cat = random.triangular(ratio_pri_v[example_p][0], ratio_pri_v[example_p][2],
-                                          ratio_pri_v[example_p][1])
+            ratio_cat = random.triangular(ratio_pri_v[example_p][0], ratio_pri_v[example_p][2],ratio_pri_v[example_p][1])
             for key, value in category_cap.items():
                 category_cap[key][p] = category_cap[key][p] * ratio_cat
 
@@ -461,7 +457,6 @@ def primary(df_iteration):
     df_priAllocation['Capacity'] = prialloc_capacities
 
     return df_priAllocation
-
 
 # --------------------------------------------------------------------------------
 
@@ -803,10 +798,11 @@ def getTarget(df_iteration, df_secCumProduction):
         t = []
         for j in range(len(df)):
             if targetMonth[k] > 0:
-                t.append(df_secCumProduction.loc[df_secCumProduction['Vaccine'] == vaccine_list[j],targetMonth[k]].sum())
+                t.append(
+                    df_secCumProduction.loc[df_secCumProduction['Vaccine'] == vaccine_list[j], targetMonth[k]].sum())
             else:
                 t.append(0)
-        target_dose['Target' + str(k+1) + ' (bn doses)'] = t
+        target_dose['Target' + str(k + 1) + ' (bn doses)'] = t
 
     df_target = pd.DataFrame(target_dose)
     df_target = pd.concat([df, df_target], axis=1)
@@ -828,16 +824,20 @@ def timeline(df):
     ----------
     df: dataframe containing data for the timeline chart
     '''
+    if df.empty:
+        df = pd.DataFrame(index=['None'],
+                          columns=['Approval (month)', 'Platform', 'Primary start time', 'Secondary start time'],
+                          data=0)
+    else:
+        df = df.copy()
+        df = df.iloc[:, 0:7]  # pull out columns A to F from dataframe
+        df['Primary start time'] = df['Primary Start'].sub(df['Approval (month)']).astype(int)
+        df['Secondary start time'] = df['Secondary Start'].sub(df['Primary Start']).astype(int)
+        df['Approval (month)'] = df['Approval (month)'].astype(int)
 
-    df = df.copy()
-    df = df.iloc[:, 0:7]  # pull out columns A to F from dataframe
-    df['Primary start time'] = df['Primary Start'].sub(df['Approval (month)']).astype(int)
-    df['Secondary start time'] = df['Secondary Start'].sub(df['Primary Start']).astype(int)
-    df['Approval (month)'] = df['Approval (month)'].astype(int)
+        df = df.drop(columns=['try', 'Vaccine', 'Category', 'Primary Start', 'Secondary Start'])
 
-    df = df.drop(columns=['try', 'Vaccine', 'Category', 'Primary Start', 'Secondary Start'])
-
-    df = df.groupby(['Platform']).mean().apply(np.ceil).astype(int)
+        df = df.groupby(['Platform']).mean().apply(np.ceil).astype(int)
 
     return df
 
@@ -860,30 +860,41 @@ def doseBreakdown(df):
     target4_pie: table of data to create the pie chart for dose target 4
     '''
     #### Get dose breakdown
+    if df.empty:
+        target1_pie = pd.DataFrame(index=['None'], columns=['Target1 (bn doses)', 'Target 1 %'], data=0)
+        target2_pie = pd.DataFrame(index=['None'], columns=['Target2 (bn doses)', 'Target 2 %'], data=0)
+        target3_pie = pd.DataFrame(index=['None'], columns=['Target3 (bn doses)', 'Target 3 %'], data=0)
+        target4_pie = pd.DataFrame(index=['None'], columns=['Target4 (bn doses)', 'Target 4 %'], data=0)
+    else:
+        df_copy = df.copy()
 
-    df_copy = df.copy()
-        
-    # Create a dataframe for each Target where 0 values have been filtered out
-    df_doses = [df_copy[df_copy['Target' + str(i) + ' (bn doses)'] != 0][['try','Platform','Target' + str(i) + ' (bn doses)']].reset_index(drop = True) for i in range(1,5)]
-    
-    # Calculate number of tries for each Target above
-    tries = [i['try'].nunique() for i in df_doses]
-    
-    # Calculate average
-    df_grouped = [(df_doses[k].groupby(['Platform'])['Target' + str(k + 1) + ' (bn doses)'].sum()) / tries[k] for k in range(len(df_doses))]
+        # Create a dataframe for each Target where 0 values have been filtered out
+        df_doses = [df_copy[df_copy['Target' + str(i) + ' (bn doses)'] != 0][
+                        ['try', 'Platform', 'Target' + str(i) + ' (bn doses)']].reset_index(drop=True) for i in
+                    range(1, 5)]
 
-    target1, target2, target3, target4 = [i for i in df_grouped]
+        # Calculate number of tries for each Target above
+        tries = [i['try'].nunique() for i in df_doses]
 
-    # Calculate the % of each Target
-    target1_percent, target2_percent, target3_percent, target4_percent = [df_grouped[i] / df_grouped[i].sum() * 100 for i in range(len(df_grouped))]
-    
-    df = df.groupby(['Platform'])[['Target1 (bn doses)','Target2 (bn doses)','Target3 (bn doses)','Target4 (bn doses)']].sum() / df['try'].nunique()
+        # Calculate average
+        df_grouped = [(df_doses[k].groupby(['Platform'])['Target' + str(k + 1) + ' (bn doses)'].sum()) / tries[k] for k
+                      in range(len(df_doses))]
 
-    target1_pie = pd.DataFrame(data = {'Target1 (bn doses)': target1, 'Target 1 %': target1_percent})
-    target2_pie = pd.DataFrame(data = {'Target2 (bn doses)': target2, 'Target 2 %': target2_percent})
-    target3_pie = pd.DataFrame(data = {'Target3 (bn doses)': target3, 'Target 3 %': target3_percent})
-    target4_pie = pd.DataFrame(data = {'Target4 (bn doses)': target4, 'Target 4 %': target4_percent})
-    
+        target1, target2, target3, target4 = [i for i in df_grouped]
+
+        # Calculate the % of each Target
+        target1_percent, target2_percent, target3_percent, target4_percent = [df_grouped[i] / df_grouped[i].sum() * 100
+                                                                              for i in range(len(df_grouped))]
+
+        df = df.groupby(['Platform'])[
+                 ['Target1 (bn doses)', 'Target2 (bn doses)', 'Target3 (bn doses)', 'Target4 (bn doses)']].sum() / df[
+                 'try'].nunique()
+
+        target1_pie = pd.DataFrame(data={'Target1 (bn doses)': target1, 'Target 1 %': target1_percent})
+        target2_pie = pd.DataFrame(data={'Target2 (bn doses)': target2, 'Target 2 %': target2_percent})
+        target3_pie = pd.DataFrame(data={'Target3 (bn doses)': target3, 'Target 3 %': target3_percent})
+        target4_pie = pd.DataFrame(data={'Target4 (bn doses)': target4, 'Target 4 %': target4_percent})
+
     return target1_pie, target2_pie, target3_pie, target4_pie
 
 
@@ -903,23 +914,26 @@ def getHistogram(target_no, df):
     return1: text
     '''
     #### Get histogram
+    if df.empty:
+        target = pd.DataFrame(np.array([[0, 0, 0.9, 0.75, 0.5]]), index=['None'],
+                              columns=['Number of Runs', 'Cumulative %', '90%', '75%', '50%'])
+    else:
+        df = df.copy()
+        # count the number of tries reach target n on a particular month
+        target = pd.DataFrame(df.groupby('Target' + str(target_no) + ' (month)')['try'].nunique())
 
-    df = df.copy()
-    # count the number of tries reach target n on a particular month
-    target = pd.DataFrame(df.groupby('Target' + str(target_no) + ' (month)')['try'].nunique())
+        # remove failed tries (month 0)
+        if target.index[0] == 0:
+            target.drop(0, inplace=True)
 
-    # remove failed tries (month 0)
-    if target.index[0] == 0:
-        target.drop(0, inplace=True)
+        # calculate the cumulative sum
+        target['Cumulative %'] = np.cumsum(target.loc[:, 'try'] / sum(target['try']))
 
-    # calculate the cumulative sum
-    target['Cumulative %'] = np.cumsum(target.loc[:, 'try'] / sum(target['try']))
+        # add referening line
+        target['90%'], target['75%'], target['50%'] = (0.9, 0.75, 0.5)
 
-    # add referening line
-    target['90%'], target['75%'], target['50%'] = (0.9, 0.75, 0.5)
-
-    # rename the column
-    target.rename(index=str, columns={"try": "Number of Runs"}, inplace=True)
+        # rename the column
+        target.rename(index=str, columns={"try": "Number of Runs"}, inplace=True)
 
     return target
 
@@ -940,37 +954,41 @@ def cumulativeProduction(target4_hist, cumulative_summary):
     df_cumulative: dataframe containing data for the cumulative chart
     '''
     #### Get cumulative production
+    if cumulative_summary.empty:
+        df_cumulative = pd.DataFrame(index=['None'], columns=['Month', '10%', '25%', '50%', '75%', '90%', 'Target 4'],
+                                     data=0)
+        df_cumulative['Target 4'] = targetDoses[3]
+    else:
+        df_hist = target4_hist.copy()
 
-    df_hist = target4_hist.copy()
+        percentage = (0.1, 0.25, 0.5, 0.75, 0.9)
+        month = []
 
-    percentage = (0.1, 0.25, 0.5, 0.75, 0.9)
-    month = []
+        for i in percentage:
+            df = df_hist[df_hist['Cumulative %'] > i]
+            month.append(int(df.index[0]))
 
-    for i in percentage:
-        df = df_hist[df_hist['Cumulative %'] > i]
-        month.append(int(df.index[0]))
+        target4 = targetDoses[3]
+        df = cumulative_summary.copy()
 
-    target4 = targetDoses[3]
-    df = cumulative_summary.copy()
+        # Define list with column names to sum()
+        lst = [i for i in range(1, 101)]
 
-    # Define list with column names to sum()
-    lst = [i for i in range(1, 101)]
+        df = df.groupby(['try'])[lst].sum()
 
-    df = df.groupby(['try'])[lst].sum()
+        df_cumulative = pd.DataFrame()  # reset the dataframe
 
-    df_cumulative = pd.DataFrame()  # reset the dataframe
-    
-    for i in month:
-        if i > 0:
-            df1 = df[(df[i - 1] < target4) & (df[i] > target4)].head(1).T
-        else:
-            df1 = df[df[100]==0].head(1).T
-        df_cumulative = pd.concat([df_cumulative, df1], axis=1)
+        for i in month:
+            if i > 0:
+                df1 = df[(df[i - 1] < target4) & (df[i] > target4)].head(1).T
+            else:
+                df1 = df[df[100] == 0].head(1).T
+            df_cumulative = pd.concat([df_cumulative, df1], axis=1)
 
-    df_cumulative['Target 4'] = targetDoses[3]
-    df_cumulative.reset_index(inplace=True)
+        df_cumulative['Target 4'] = targetDoses[3]
+        df_cumulative.reset_index(inplace=True)
 
-    df_cumulative.columns = ['Month', '10%', '25%', '50%', '75%', '90%', 'Target 4']
+        df_cumulative.columns = ['Month', '10%', '25%', '50%', '75%', '90%', 'Target 4']
 
     return df_cumulative
 
@@ -1003,7 +1021,7 @@ def getOutput():
     cum_line: table of data to create the cumulative % line chart.
     '''
 
-        # get the timeline table
+    # get the timeline table
     timeline_bar = timeline(output_summary)
 
     # get the pie chart tables
@@ -1016,9 +1034,9 @@ def getOutput():
     target4_hist = getHistogram(4, output_summary)
 
     # get the trendline table and highlights if targets have been met
-    if target1_hist.empty:
-        cum_line = {'Month': {}, '10%': {}, '25%': {}, '50%': {}, '75%': {}, '90%': {}}
-        highlights = [0,0,0,0]
+    if target1_hist.index[0] == 'None':
+        cum_line = {'Month': {'None':0}, '10%': {'None':0}, '25%': {'None':0}, '50%': {'None':0}, '75%': {'None':0}, '90%': {'None':0}}
+        highlights = [0, 0, 0, 0]
     else:
         cum_line = cumulativeProduction(target4_hist, cumulative_summary).to_dict()
         targets_list = [target1_hist, target2_hist, target3_hist, target4_hist]
@@ -1108,7 +1126,7 @@ def getScheduleInput():
     gantt[['Value', 'Low', 'Most Likely', 'High']] = gantt[['Value', 'Low', 'Most Likely', 'High']].astype(int)
 
     mask = (gantt['Activities'] != 'Scale up and and process development') & (
-                gantt['Activities'] != 'Technology transfer') & (
+            gantt['Activities'] != 'Technology transfer') & (
                    gantt['Activities'] != 'DP technology transfer')
 
     gantt.loc[mask, 'Value'] = round(most_likely_r * gantt.loc[mask, 'Value'], 0).astype(int)
@@ -1128,7 +1146,7 @@ def getScheduleInput():
     df_schedule = {}
 
     for i in platforms:
-        gantt_updated_copy=gantt_updated.copy()
+        gantt_updated_copy = gantt_updated.copy()
         low_d, most_likely_d, high_d = [parameter_v[i][x] for x in ranges]
         low, most_likely, high = [parameter[i][x] for x in ranges]
 
@@ -1138,11 +1156,11 @@ def getScheduleInput():
 
         mask = (gantt_updated_copy['Activities'] == 'Scale up and and process development') | (
                 gantt_updated_copy['Activities'] == 'Technology transfer') | (
-                           gantt_updated_copy['Activities'] == 'DP technology transfer')
+                       gantt_updated_copy['Activities'] == 'DP technology transfer')
 
         gantt_updated_copy.loc[mask, 'Low'] = round(low_r * gantt_updated_copy.loc[mask, 'Low'], 0).astype(int)
         gantt_updated_copy.loc[mask, 'Most Likely'] = round(most_likely_r * gantt_updated_copy.loc[mask, 'Most Likely'],
-                                                       0).astype(int)
+                                                            0).astype(int)
         gantt_updated_copy.loc[mask, 'High'] = round(high_r * gantt_updated_copy.loc[mask, 'High'], 0).astype(int)
 
         df_schedule[i] = gantt_updated_copy

@@ -554,6 +554,9 @@ def runModelsMain():
 			except:
 				print ('Manufacturing failed')
 				 
+		if manufacturingOutput['highlights'][0] + manufacturingOutput['highlights'][1] + manufacturingOutput['highlights'][2] + manufacturingOutput['highlights'][3] == 0:
+			manufacturingOutput = []
+		
 		# Collect the output
 
 		data['time'] = params['time_now']
