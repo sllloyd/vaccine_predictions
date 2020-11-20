@@ -1,6 +1,6 @@
 {
     "cross_check": 1,
-    "version": 21,
+    "version": 23,
     "phases": [
         "Pre-Clinical",
         "Phase I",
@@ -87,9 +87,9 @@
     "bestVaccinesMax": 10,
     "tries": 100,
     "months": 36,
-    "option": "Normal",
-    "pos_factor": 1.2,
-    "timeline_factor": 1.2,
+    "option": "Baseline",
+    "pos_factor": 1,
+    "timeline_factor": 1,
     "best_timeline": [
         3,
         2,
@@ -118,6 +118,7 @@
         0.46,
         0.74
     ],
+    "phase3_preliminary_pos": 0.9,
     "platform_pos": [
         0.37,
         0.64,
@@ -395,6 +396,10 @@
             "Lowest Available Capacity (million doses\/month)": 1061,
             "Most Likely Available Capacity (million doses\/month)": 1327,
             "Highest Available Capacity (million doses\/month)": 4268
+        },
+        "ramp_up": {
+            "pre_approval": 0.1,
+            "duration": 5
         }
     }
 }

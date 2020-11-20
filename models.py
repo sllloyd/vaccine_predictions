@@ -123,7 +123,7 @@ def runModelsMain():
 			average['Phase Success'][platformKey] = {}
 			average['Phase Numbers'][platformKey] = {}
 												
-		trialResults = "Try ID,Vaccine,Phase I (month),Phase II (month),Phase III (month),Approval (month)\n";
+		trialResults = "Try ID,Vaccine,Phase I (month),,Phase II (month),,Phase III (month),,Approval (month),\n";
 		
 		approvals = []
 		
@@ -148,11 +148,13 @@ def runModelsMain():
 								
 			count = {}
 			ended = {}
+			started = {}
 			
 			# Check if vaccine has already ended a phase
 			
 			for j in range(len(vaccines)):
 				ended[j] = {}
+				started[j] = {}
 					
 				for phase in range(len(params['phases'])):
 					if vaccines[j]['end'][phase] <= 0:
@@ -160,6 +162,8 @@ def runModelsMain():
 						successes[phase][vaccines[j]['platform_key']] += 1
 						# This should really trigger updatePos
 						# But let's assume that is taken care of in the initial POS values
+					if vaccines[j]['start'][phase] <= 0:
+						started[j][phase] = vaccines[j]['start'][phase]
 				
 			
 			# Main loop over months
@@ -243,6 +247,9 @@ def runModelsMain():
 											buyouts += 1
 											# Promote it to Large Pharma
 											initialiseVaccine(vaccines[j], params, phase+1, month, 2)
+							
+							if month == vaccines[j]['start'][phase]:
+								started[j][phase] = month
 
 				# End loop over vaccines
 								
@@ -321,12 +328,14 @@ def runModelsMain():
 			trialData = {}
 			for j in range(len(vaccines)):
 				if len(ended[j]) == 0: continue
-				entry = [t+1, int(vaccines[j]['number']), '', '', '', '']
+				entry = [t+1, int(vaccines[j]['number']), '', '', '', '', '', '', '', '']
 				got = False
 				for phase in range(1, len(params['phases'])):
+					if phase in started[j]:
+						entry[2*phase] = started[j][phase]
 					if phase in ended[j]:
-						entry[phase+1] = ended[j][phase]
-						got = True
+						entry[2*phase+1] = ended[j][phase]
+						if phase == 4: got = True
 			
 				if not got: continue
 				for i in range(len(entry)):
@@ -550,12 +559,12 @@ def runModelsMain():
 			try: 
 				outp = manufacturing.getOutput()
 				manufacturingOutput = {'timeline_bar': outp[0], 'target1_pie': outp[1], 'target2_pie': outp[2], 'target3_pie': outp[3], 'target4_pie': outp[4], 'target1_hist': outp[5], 'target2_hist': outp[6], 'target3_hist': outp[7], 'target4_hist': outp[8], 'cum_line': outp[9], 'highlights': outp[10]}
-				print (manufacturingOutput)
+#				print (manufacturingOutput)
 			except:
 				print ('Manufacturing failed')
 				 
-		if manufacturingOutput['highlights'][0] + manufacturingOutput['highlights'][1] + manufacturingOutput['highlights'][2] + manufacturingOutput['highlights'][3] == 0:
-			manufacturingOutput = []
+			if manufacturingOutput['highlights'][0] + manufacturingOutput['highlights'][1] + manufacturingOutput['highlights'][2] + manufacturingOutput['highlights'][3] == 0:
+				manufacturingOutput = []
 		
 		# Collect the output
 
@@ -834,7 +843,7 @@ def checkParameters(params):
 		'bio_buyout_fract': ([''], 0, 1)
 	}
 	choices = { 
-		'option': ([''], ['Pessimistic', 'Normal', 'Optimistic']),
+		'option': ([''], ['Pessimistic', 'Baseline', 'Optimistic']),
 		'platform_timeline': ([0, 1, 2, 3, 4, 5, 6, 7, 8], ['much_faster', 'faster', 'slightly_faster', 'normal', 'slightly_slower', 'slower', 'much_slower', 'very_much_slower']),
 		'platform_correlation': ([0, 1, 2, 3, 4, 5, 6, 7, 8], ['None', 'Low', 'Medium', 'Strong']),
 		'funding_timeline': ([0, 1, 2, 3, 4], ['much_faster', 'faster', 'slightly_faster', 'normal', 'slightly_slower', 'slower', 'much_slower', 'very_much_slower']),
@@ -1113,6 +1122,10 @@ def initialiseVaccine(vaccine, params, startPhase = 0, thisMonth = 0, fundingKey
 			
 			if phase == 3: 
 				vaccine['pos'][phase] = params['platform_pos'][platformKey]
+				if vaccine['phase3_preliminary'] > 0:
+					vaccine['pos'][phase] = params['phase3_preliminary_pos']
+					if vaccine['end_dates'][1] == 0 or vaccine['end_dates'][1] > params['time_now']: vaccine['end_dates'][1] = vaccine['phase3_preliminary']
+					if vaccine['end_dates'][2] == 0 or vaccine['end_dates'][2] > params['time_now']: vaccine['end_dates'][2] = vaccine['phase3_preliminary']
 			else:
 				vaccine['pos'][phase] = params['phase_success'][phase]
 				
@@ -1170,7 +1183,7 @@ def initialiseVaccine(vaccine, params, startPhase = 0, thisMonth = 0, fundingKey
 				vaccine['end'][phase] = vaccine['start'][phase] + getPhaseLength(vaccine, phase, params)
 				# Don't allow any before this month (otherwise we would have set the date already)
 				if vaccine['end'][phase] <= thisMonth: vaccine['end'][phase] = thisMonth + 1
-		
+									
 #-----------------------------------------------------------------
 
 def isActive(vaccine, phase, month):
@@ -1292,7 +1305,6 @@ def multiplyPos(pos, multiplier):
 def updateApproval(approved, vaccines, params):
 
 	# Update approval chances of other vaccines
-	
 	if len(approved) < params['approval_limit']: return
 
 	for j in range(len(vaccines)):
@@ -1345,6 +1357,8 @@ def updatePos(hasSuccessFailures, successes, failures, vaccines, params):
 				for phase2 in range(len(params['phases'])):
 					if phase2 == 3: 
 						oldPos = params['platform_pos'][platformKey]
+						if vaccines[j]['phase3_preliminary'] > 0:
+							oldPos = params['phase3_preliminary_pos']
 					else:
 						oldPos = params['phase_success'][phase2]
 						

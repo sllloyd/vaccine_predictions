@@ -7,7 +7,7 @@ Vaccines Manufacturing Model
 Bryden Wood
 License: MIT, see full license in LICENSE.txt
 --------------------------------------------------------------------------------
-Date: 2020-10-XX
+Date: 2020-11-18
 Authors:
     Jiabin Li
     Wynne Lim
@@ -51,6 +51,7 @@ import random
 import datetime
 import json
 import copy
+
 
 # --------------------------------------------------------------------------------
 
@@ -100,7 +101,6 @@ def initialise(params, vaccines, manufacturing):
 
     primary_cap, ratio_pri_v, ratio_pri_d = getPrimaryInput()
 
-
     # initialise the product info
     df_Categories = default['Capacity Category']
     df_product = getProduct(vaccines)
@@ -120,12 +120,13 @@ def initialise(params, vaccines, manufacturing):
     wastage = demand['Percentage of drug wastage']
     dose_perVx = demand['Number of doses per vaccine']
     # set the target numbers
-    targetDoses = [demand[x] * (1 + wastage / 100) * dose_perVx for x in targets]
+    targetDoses = [(demand[x] / (1 - wastage / 100)) * dose_perVx for x in targets]
     targetDoses = np.cumsum(targetDoses)
 
     # define global variables
     output_summary = pd.DataFrame()
     cumulative_summary = pd.DataFrame()
+
 
 # --------------------------------------------------------------------------------
 
@@ -166,6 +167,8 @@ def getSecondaryInput():
     return secDefaultCap, ratio_sec, sec_plants_available
 
 
+# --------------------------------------------------------------------------------
+
 def getIteration(df_rnd):
     '''
     Takes the output from the R&D model and creates the iteration data required
@@ -187,9 +190,9 @@ def getIteration(df_rnd):
     # generate iteration table
     tryID = df_rnd['try']
     v = df_rnd['vaccines']
-    df = pd.DataFrame(v, columns=['Vaccine', 1, 2, 3, 'Approval (month)'])
+    df = pd.DataFrame(v, columns=['Vaccine', 'phase1_start', 'phase1_end', 'phase2_start', 'phase2_end', 'Phase III',
+                                  'phase3_end', 'approval_start', 'Approval (month)'])
     df['try'] = tryID
-    df = df[['try', 'Vaccine', 'Approval (month)']]
 
     # filter the vaccines being approved
     df_rnd = df[df['Approval (month)'] != '']
@@ -199,19 +202,26 @@ def getIteration(df_rnd):
     df_iteration = df_rnd
     df_iteration = pd.merge(df_iteration, df_product, on='Vaccine', how='left')
 
+    df_iteration.drop(['phase1_start', 'phase1_end', 'phase2_start', 'phase2_end', 'Phase III','phase3_end','approval_start'],axis=1, inplace= True)
     platforms = np.array(df_iteration['Platform'])
     categories = []
 
+    # get capacity category info
     for i in df_iteration.index.values:
         categories.append(df_Categories[platforms[i]])
 
     df_iteration['Category'] = categories
 
     # Keep the first 3 of vaccine in the same category
+    df_iteration = df_iteration.sort_values(by=['Approval (month)'])
     df_iteration = df_iteration.groupby('Category').head(3)
     df_iteration.reset_index(drop=True, inplace=True)
 
+    # rearrange the table
+    # df_iteration = df_iteration[['try',]]
+
     return df_iteration
+
 
 # --------------------------------------------------------------------------------
 
@@ -231,7 +241,7 @@ def getProduct(vaccines):
 
     # filter the vaccine data
     data = vaccines
-    df_product = pd.DataFrame(columns = ['Vaccine', 'Platform', 'Funding'])
+    df_product = pd.DataFrame(columns=['Vaccine', 'Platform', 'Funding'])
 
     vaccines = []
     platforms = []
@@ -247,8 +257,8 @@ def getProduct(vaccines):
     df_product['Platform'] = platforms
     df_product['Funding'] = funding
 
-
     return df_product
+
 
 # --------------------------------------------------------------------------------
 
@@ -276,11 +286,9 @@ def getManufacturingStartTime(df_iteration):
 
     # get primary and secondary start time from scheduling (getSchedule) function
     for i in df_iteration.index.values:
-
         t = getSchedule(platforms[i], approval_months[i], funding[i])
         pri_starts[i] = t[0]
         sec_starts[i] = t[1]
-
 
     df_iteration['Primary Start'] = pri_starts
     df_iteration['Secondary Start'] = sec_starts
@@ -292,7 +300,6 @@ def getManufacturingStartTime(df_iteration):
 
 # --------------------------------------------------------------------------------
 def getPrimaryInput():
-
     '''
     This function extracts the relevant information pertaining to 'primary'
     from the dictionaries: 'default' and 'm_params' and
@@ -323,7 +330,8 @@ def getPrimaryInput():
 
     # dfPrimary['1'], dfPrimary['2'], dfPrimary['3'], dfPrimary['4'], dfPrimary['5'] = 0, 0, 0, 0, 0
 
-    platforms = ['DNA', 'Inactivated', 'Live-attenuated', 'Non-replicating viral vector', 'Replicating viral vector','Protein subunit', 'Other', 'RNA']
+    platforms = ['DNA', 'Inactivated', 'Live-attenuated', 'Non-replicating viral vector', 'Replicating viral vector',
+                 'Protein subunit', 'Other', 'RNA']
     platform_cat = ['DNA', 'Protein subunit', 'Inactivated', 'RNA']
 
     # dv -> default volume  dd -> default doses
@@ -339,9 +347,11 @@ def getPrimaryInput():
         ratio_pri_v[p] = [parameter[p][col] / parameter_dv[platform_cat.index(p)] for col in cols]
 
     for p in platforms:
-        ratio_pri_d[p] = parameter[p]['Doses for most likely volume (Million Doses per month) N_v'] / parameter_dd[platforms.index(p)]
+        ratio_pri_d[p] = parameter[p]['Doses for most likely volume (Million Doses per month) N_v'] / parameter_dd[
+            platforms.index(p)]
 
     return primary_cap, ratio_pri_v, ratio_pri_d
+
 
 # --------------------------------------------------------------------------------
 def primary(df_iteration):
@@ -381,7 +391,8 @@ def primary(df_iteration):
         category_cap = primary_cap_copy[str(i)]
         example_p = platform_cat[category_list.index(i)]
         for p in platforms_bycat[str(i)]:
-            ratio_cat = random.triangular(ratio_pri_v[example_p][0], ratio_pri_v[example_p][2],ratio_pri_v[example_p][1])
+            ratio_cat = random.triangular(ratio_pri_v[example_p][0], ratio_pri_v[example_p][2],
+                                          ratio_pri_v[example_p][1])
             for key, value in category_cap.items():
                 category_cap[key][p] = category_cap[key][p] * ratio_cat
 
@@ -457,6 +468,7 @@ def primary(df_iteration):
     df_priAllocation['Capacity'] = prialloc_capacities
 
     return df_priAllocation
+
 
 # --------------------------------------------------------------------------------
 
@@ -569,7 +581,6 @@ def secondary(df_iteration, df_priAllocation):
     capacity_arr = np.array(df_secThroughput['Capacity'])
     start_arr = np.array(df_secThroughput['Secondary Start'])
     monthly_throughput = {}
-
     for j in range(1, 101):
         col_month = []
         for i in range(len(df_secThroughput)):
@@ -700,7 +711,10 @@ def getSchedule(platform, approval_month, funding_cat):
 
     date_today = datetime.date.today()
 
-    m_time = [end_dates[i] for i in [17, 27]]
+    comm_prod_index = int(df_gantt[df_gantt['Activities'] == 'Start commercial production'].index.values[0])
+    dp_prod_index = int(df_gantt[df_gantt['Activities'] == 'Start DP production'].index.values[0])
+
+    m_time = [end_dates[i] for i in [comm_prod_index, dp_prod_index]]
 
     for t in m_time:
         m_month.append((t.year - date_today.year) * 12 + t.month - date_today.month)
@@ -1035,7 +1049,8 @@ def getOutput():
 
     # get the trendline table and highlights if targets have been met
     if target1_hist.index[0] == 'None':
-        cum_line = {'Month': {'None':0}, '10%': {'None':0}, '25%': {'None':0}, '50%': {'None':0}, '75%': {'None':0}, '90%': {'None':0}}
+        cum_line = {'Month': {'None': 0}, '10%': {'None': 0}, '25%': {'None': 0}, '50%': {'None': 0},
+                    '75%': {'None': 0}, '90%': {'None': 0}}
         highlights = [0, 0, 0, 0]
     else:
         cum_line = cumulativeProduction(target4_hist, cumulative_summary).to_dict()
@@ -1065,10 +1080,10 @@ def runTrial(trialData):
     global output_summary
     global cumulative_summary
 
-    ## get the iteration table for this try
-    df_iteration = getIteration(trialData)
+    if bool(trialData):
+        ## get the iteration table for this try
+        df_iteration = getIteration(trialData)
 
-    if not df_iteration.empty:
         ## append the primary and secondary manufacturing start time to the iteration table
         getManufacturingStartTime(df_iteration)
 
@@ -1166,5 +1181,6 @@ def getScheduleInput():
         df_schedule[i] = gantt_updated_copy
 
     return df_schedule, funding
+
 
 ##############################################################################
