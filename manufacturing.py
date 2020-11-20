@@ -7,7 +7,7 @@ Vaccines Manufacturing Model
 Bryden Wood
 License: MIT, see full license in LICENSE.txt
 --------------------------------------------------------------------------------
-Date: 2020-11-18
+Date: 2020-11-XX
 Authors:
     Jiabin Li
     Wynne Lim
@@ -95,9 +95,12 @@ def initialise(params, vaccines, manufacturing):
     global cumulative_summary
     global df_schedule
 
+    global ramp_up
+
     # load offline default data and online parameters
     default = jread(manufacturing)
     m_params = params
+    ramp_up = params['ramp_up']
 
     primary_cap, ratio_pri_v, ratio_pri_d = getPrimaryInput()
 
@@ -186,6 +189,7 @@ def getIteration(df_rnd):
     df_iteration: a dataframe of the successful vaccines with data processed
         for use in the manufacturing model
     '''
+    global mfg_at_risk
 
     # generate iteration table
     tryID = df_rnd['try']
@@ -202,7 +206,17 @@ def getIteration(df_rnd):
     df_iteration = df_rnd
     df_iteration = pd.merge(df_iteration, df_product, on='Vaccine', how='left')
 
-    df_iteration.drop(['phase1_start', 'phase1_end', 'phase2_start', 'phase2_end', 'Phase III','phase3_end','approval_start'],axis=1, inplace= True)
+    # get product manufacturing at risk info
+    df_iteration_copy = df_iteration.copy()
+    df_iteration_copy['Mfg before approval'] = df_iteration_copy['Funding'].apply(
+        lambda x: funding[x]['Manufacturing start before approval?'])
+    mfg_at_risk = df_iteration_copy[['Phase III', 'Mfg before approval', 'Approval (month)']].to_dict('record')
+    mfg_at_risk = dict(zip(df_rnd['Vaccine'], mfg_at_risk))
+
+    df_iteration.drop(
+        ['phase1_start', 'phase1_end', 'phase2_start', 'phase2_end', 'Phase III', 'phase3_end', 'approval_start'],
+        axis=1, inplace=True)
+
     platforms = np.array(df_iteration['Platform'])
     categories = []
 
@@ -580,14 +594,78 @@ def secondary(df_iteration, df_priAllocation):
     df_secThroughput = df_secAllocation.copy()
     capacity_arr = np.array(df_secThroughput['Capacity'])
     start_arr = np.array(df_secThroughput['Secondary Start'])
+
+    duration = ramp_up['duration']
+    pre_approval = ramp_up['pre_approval']
+
+    cum_arr = np.cumsum(np.linspace(0, 1, duration + 1))
+
     monthly_throughput = {}
     for j in range(1, 101):
         col_month = []
         for i in range(len(df_secThroughput)):
-            if j > start_arr[i]:
-                capacity_month = (j - start_arr[i]) * capacity_arr[i]
+            vx_ID = secalloc_vaccines[i]
+            phase3 = mfg_at_risk[vx_ID]['Phase III']
+            mfg_before_approval = mfg_at_risk[vx_ID]['Mfg before approval']
+            approv_month = mfg_at_risk[vx_ID]['Approval (month)']
+
+            if phase3 > start_arr[i]:  # secondary -> phase 3 -> approval
+                # calculate the cumulative initial dose
+                if mfg_before_approval == 1 and j > phase3:
+                    if j >= approv_month:
+                        initial_doses = pre_approval * (approv_month - phase3)
+                    else:
+                        initial_doses = 0
+                else:
+                    initial_doses = 0
+
+                # calculate the cumulative ramp up doses
+                if j > approv_month:  # after ramp up
+                    if j - approv_month >= duration:
+                        cum_factor = (j - (approv_month + duration - 1)) + cum_arr[duration - 1] + initial_doses
+                    else:  # in the ramp up period
+                        cum_factor = cum_arr[int(j - approv_month)] + initial_doses
+                    capacity_month = cum_factor * capacity_arr[i]
+
+                else:
+                    capacity_month = initial_doses * capacity_arr[i]
+
             else:
-                capacity_month = 0
+                if approv_month > start_arr[i]:  # phase 3 - > secondary - > approval
+                    # calculate the cumulative initial dose
+                    if mfg_before_approval == 1 and j > start_arr[i]:
+                        if j >= approv_month:
+                            initial_doses = pre_approval * (approv_month - start_arr[i])
+                        else:
+                            initial_doses = 0
+                    else:
+                        initial_doses = 0
+
+                    # calculate the cumulative ramp up doses
+                    if j > approv_month:  # after ramp up
+                        if j - approv_month >= duration:
+                            cum_factor = (j - (approv_month + duration - 1)) + cum_arr[duration - 1] + initial_doses
+                        else:  # in the ramp up period
+                            cum_factor = cum_arr[int(j - approv_month)] + initial_doses
+                        capacity_month = cum_factor * capacity_arr[i]
+
+                    else:
+                        capacity_month = initial_doses * capacity_arr[i]
+
+                else:  # phase 3 - > approval - > secondary
+                    # calculate the cumulative initial dose
+                    initial_doses = 0
+
+                    # calculate the cumulative ramp up doses
+                    if j > start_arr[i]:  # after ramp up
+                        if j - start_arr[i] >= duration:
+                            cum_factor = (j - (start_arr[i] + duration - 1)) + cum_arr[duration - 1] + initial_doses
+                        else:  # in the ramp up period
+                            cum_factor = cum_arr[int(j - start_arr[i])] + initial_doses
+                        capacity_month = cum_factor * capacity_arr[i]
+
+                    else:
+                        capacity_month = initial_doses * capacity_arr[i]
 
             col_month.append(capacity_month)
 
@@ -1083,7 +1161,6 @@ def runTrial(trialData):
     if bool(trialData):
         ## get the iteration table for this try
         df_iteration = getIteration(trialData)
-
         ## append the primary and secondary manufacturing start time to the iteration table
         getManufacturingStartTime(df_iteration)
 
@@ -1182,5 +1259,4 @@ def getScheduleInput():
 
     return df_schedule, funding
 
-
-##############################################################################
+############################################################################## 
