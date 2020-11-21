@@ -7,7 +7,7 @@ Vaccines Manufacturing Model
 Bryden Wood
 License: MIT, see full license in LICENSE.txt
 --------------------------------------------------------------------------------
-Date: 2020-11-XX
+Date: 2020-11-20
 Authors:
     Jiabin Li
     Wynne Lim
@@ -38,9 +38,9 @@ The model uses the following libraries from the default Python installation:
     copy
 
 The model uses the following additional libraries:
-    numpy (tested on version 1.15.4)
-    scipy (tested on version 1.1.0)
-    pandas (tested on version 1.0.5)
+    numpy
+    scipy
+    pandas
 --------------------------------------------------------------------------------
 '''
 
@@ -210,7 +210,7 @@ def getIteration(df_rnd):
     df_iteration_copy = df_iteration.copy()
     df_iteration_copy['Mfg before approval'] = df_iteration_copy['Funding'].apply(
         lambda x: funding[x]['Manufacturing start before approval?'])
-    mfg_at_risk = df_iteration_copy[['Phase III', 'Mfg before approval', 'Approval (month)']].to_dict('record')
+    mfg_at_risk = df_iteration_copy[['Phase III', 'Mfg before approval', 'Approval (month)']].to_dict('records')
     mfg_at_risk = dict(zip(df_rnd['Vaccine'], mfg_at_risk))
 
     df_iteration.drop(
