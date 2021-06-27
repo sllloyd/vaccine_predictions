@@ -141,6 +141,7 @@ def runModelsMain():
 			failures = {}
 			successes = {}
 			approved = []
+			euapproved = []
 			buyouts = 0
 			for phase in range(len(params['phases'])):
 				failures[phase] = [0] * len(params['platforms'])
@@ -164,7 +165,9 @@ def runModelsMain():
 						# But let's assume that is taken care of in the initial POS values
 					if vaccines[j]['start'][phase] <= 0:
 						started[j][phase] = vaccines[j]['start'][phase]
-				
+					if vaccines[j]['eua_date'] > 0:
+						euapproved.append(j)
+						
 			
 			# Main loop over months
 			
@@ -210,6 +213,8 @@ def runModelsMain():
 								rand = random.uniform(0.0, 1.0)
 								if rand > vaccines[j]['pos'][phase]:
 									# Failed
+									if vaccines[j]['status'] == 'EUA': print('With EUA approval failed phase', phase, 'month', month, vaccines[j]['institutes'], vaccines[j]['pos'][phase])
+
 									vaccines[j]['status'] = 'Failed'
 									Stats.addx('Phase Success ' + str(phase) + ' ' + str(platformKey), 0)
 									# Decide whether failure is technical or funding
@@ -230,6 +235,7 @@ def runModelsMain():
 									if phase == 4:
 										hasApproval = True
 										approved.append(j)
+										if j in euapproved: euapproved.remove(j)
 										vaccines[j]['status'] = 'Approved'
 										if params['do_update_approval']: updateApproval(approved, vaccines, params)
 										if firstMonth == -1: firstMonth = month
@@ -250,7 +256,24 @@ def runModelsMain():
 							
 							if month == vaccines[j]['start'][phase]:
 								started[j][phase] = month
-
+								
+						# Try EUA (but only if none have been properly approved)
+						
+						if len(approved) == 0 and vaccines[j]['status'] != 'EUA' and month == vaccines[j]['eua_end']:
+							# Did it succeed?
+							rand = random.uniform(0.0, 1.0)
+							print(vaccines[j]['eua_success'])
+							if rand > vaccines[j]['eua_success']:
+								# Failed
+								print('EUA failed month', month, vaccines[j]['institutes'])
+							else:
+								# Succeeded
+								print('EUA success month', month, vaccines[j]['institutes'])
+								vaccines[j]['status'] = 'EUA'
+								vaccines[j]['eua_end'] = month
+								euapproved.append(j)
+								if params['do_update_euapproval']: updateEuApproval(euapproved, vaccines, params)
+									
 				# End loop over vaccines
 								
 				# Update POS on success/failure
@@ -274,6 +297,7 @@ def runModelsMain():
 				count[month]['Phase I/II'] = 0
 				count[month]['Phase II/III'] = 0
 				count[month]['Approved'] = 0
+				count[month]['EU Approved'] = 0
 				count[month]['Total'] = 0
 				
 				# Loop over vaccines counting those finished and still active
@@ -290,7 +314,7 @@ def runModelsMain():
 					if isActive(vaccines[j], 4, month): count[month]['Approval'] += 1
 
 					if isFinished(vaccines[j], 4, month): count[month]['Approved'] += 1
-					
+					if vaccines[j]['status'] == 'EUA': count[month]['EU Approved'] += 1
 					count[month]['Total'] += 1
 
 				# End loop over vaccines
@@ -303,13 +327,25 @@ def runModelsMain():
 				Stats.addx('Count ' + str(month) + ' Phase I/II', count[month]['Phase I/II'])
 				Stats.addx('Count ' + str(month) + ' Phase II/III', count[month]['Phase II/III'])
 				Stats.addx('Count ' + str(month) + ' Approved', count[month]['Approved'])
+				Stats.addx('Count ' + str(month) + ' EU Approved', count[month]['EU Approved'])
 				Stats.addx('Count ' + str(month) + ' Total', count[month]['Total'])
-				if count[month]['Approved'] == 0:
+				if count[month]['Approved'] == 0 and count[month]['EU Approved'] == 0:
 					Stats.addx('Count ' + str(month) + ' Prob 0', 1)
 				for k in range(1, 6):
-					if count[month]['Approved'] >= k:
+					if count[month]['Approved'] + count[month]['EU Approved'] >= k:
 						Stats.addx('Count ' + str(month) +  ' Prob ' + str(k), 1)
 			
+#===
+				eua = 0
+				app = 0
+				fai = 0
+				for j in range(len(vaccines)):
+					if vaccines[j]['status'] == 'EUA': eua += 1
+					if vaccines[j]['status'] == 'Approved': app += 1
+					if vaccines[j]['status'] == 'Failed': fai += 1
+			
+#				print(month, eua, app, fai)
+#===
 			# End loop over months
 			
 			for j in range(len(vaccines)):
@@ -335,7 +371,8 @@ def runModelsMain():
 						entry[2*phase] = started[j][phase]
 					if phase in ended[j]:
 						entry[2*phase+1] = ended[j][phase]
-						if phase == 4: got = True
+#						if phase == 4: got = True
+						got = True
 			
 				if not got: continue
 				for i in range(len(entry)):
@@ -348,8 +385,12 @@ def runModelsMain():
 					
 				trialData['vaccines'].append(entry[1:])
 				trialResults += "\n";
-			
-			approvals.append(approved)
+#			approvals.append(set(approved + euapproved))
+			all_approvals = list(approved)
+			for item in euapproved:
+				if not item in all_approvals: all_approvals.append(item)
+			approvals.append(all_approvals)
+			print(approved, euapproved, approvals)
 			
 			if params['do_manufacturing']: manufacturing.runTrial(trialData)
 			
@@ -381,11 +422,13 @@ def runModelsMain():
 			average[month]['Phase I/II'] = Stats.average('Count ' + str(month) + ' Phase I/II')
 			average[month]['Phase II/III'] = Stats.average('Count ' + str(month) + ' Phase II/III')
 			average[month]['Approved'] = Stats.average('Count ' + str(month) + ' Approved')
+			average[month]['EU Approved'] = Stats.average('Count ' + str(month) + ' EU Approved')
 			average[month]['Total'] = Stats.average('Count ' + str(month) + ' Total')
 			
 			deviation[month]['Phase I/II'] = Stats.deviation('Count ' + str(month) + ' Phase I/II')
 			deviation[month]['Phase II/III'] = Stats.deviation('Count ' + str(month) + ' Phase II/III')
 			deviation[month]['Approved'] = Stats.deviation('Count ' + str(month) + ' Approved')
+			deviation[month]['EU Approved'] = Stats.deviation('Count ' + str(month) + ' EU Approved')
 			deviation[month]['Total'] = Stats.deviation('Count ' + str(month) +  ' Total')
 
 			for k in range(6):
@@ -563,7 +606,7 @@ def runModelsMain():
 			except:
 				print ('Manufacturing failed')
 				 
-			if manufacturingOutput['highlights'][0] + manufacturingOutput['highlights'][1] + manufacturingOutput['highlights'][2] + manufacturingOutput['highlights'][3] == 0:
+			if not 'highlights' in manufacturingOutput or manufacturingOutput['highlights'][0] + manufacturingOutput['highlights'][1] + manufacturingOutput['highlights'][2] + manufacturingOutput['highlights'][3] == 0:
 				manufacturingOutput = []
 		
 		# Collect the output
@@ -825,6 +868,12 @@ def checkParameters(params):
 		'worst_timeline': ([0, 1, 2, 3, 4], 1, 48),
 		'phase_success': ([0, 1, 2, 3, 4], 0, 1),
 		'platform_pos': ([0, 1, 2, 3, 4, 5, 6, 7, 8], 0, 1),
+		'phase3_preliminary_pos': ([''], 0, 1),
+		'eua_success': ([''], 0, 1),
+		'eua_best': ([''], 1, 48),
+		'eua_likely': ([''], 1, 48),
+		'eua_worst': ([''], 1, 48),
+		'eua_preliminary': ([''], 1, 48),
 		'platform_correlation_values': (['None', 'Low', 'Medium', 'Strong'], 0, 1),
 		'timeline_factor_values': (['much_faster', 'faster', 'slightly_faster', 'normal', 'slightly_slower', 'slower', 'much_slower', 'very_much_slower'], 0, 10),
 		'funding_pos': ([0, 1, 2, 3, 4], 0, 10),
@@ -833,7 +882,10 @@ def checkParameters(params):
 		'funding_overlap_phase_overlap': (['simult', 'mostly', 'phases12', 'phases23'], 0, 10),
 		'funding_overlap_phase_gap': (['phases12', 'phases23', 'consec', 'gaps'], 0, 30),
 		'funding_tech_failure': ([0, 1, 2, 3, 4], 0, 1),
-		'approval_limit': ([''], 0, 100),
+		'eua_limit': ([''], 0, 100),
+		'eua_pos': ([''], 0, 1),
+		'eua_timeline': ([''], 1, 10),
+		'eua_limit': ([''], 0, 100),
 		'approval_pos': ([''], 0, 1),
 		'approval_timeline': ([''], 1, 10),
 		'phase3_slowdown_fract': ([''], 0, 1),
@@ -971,27 +1023,7 @@ def getPhaseLength(vaccine, phase, params):
 	likely_timeline = vaccine['likely'][phase]
 	worst_timeline = vaccine['worst'][phase]
 
-	# The probability function is an asymmetric triangle starting at best, 
-	# peaking at likely and ending at worst.
-	
-	rand = 1.0
-	prob = 0
-	# Keep trying until the random number is below the function
-	while rand > prob:
-		rand = random.uniform(0.0, 1.0)
-		months = random.uniform(worst_timeline, best_timeline)
-		if months < likely_timeline:
-			if likely_timeline - best_timeline > 0:
-				prob = (months - best_timeline)/(likely_timeline - best_timeline)
-			else:
-				months = likely_timeline
-				break
-		else:
-			if worst_timeline - likely_timeline > 0:
-				prob = (worst_timeline - months)/(worst_timeline - likely_timeline)
-			else:
-				months = likely_timeline
-				break
+	months = getTriangle(vaccine['best'][phase], vaccine['likely'][phase], vaccine['worst'][phase])
 
 	# Randomly lengthen Phase III
 		
@@ -1047,6 +1079,34 @@ def getTimeNow():
 	
 	return int(time.time())
 
+#-------------------------------------------------------------------
+
+def getTriangle(best_timeline, likely_timeline, worst_timeline):
+
+	# The probability function is an asymmetric triangle starting at best, 
+	# peaking at likely and ending at worst.
+	
+	rand = 1.0
+	prob = 0
+	# Keep trying until the random number is below the function
+	while rand > prob:
+		rand = random.uniform(0.0, 1.0)
+		months = random.uniform(worst_timeline, best_timeline)
+		if months < likely_timeline:
+			if likely_timeline - best_timeline > 0:
+				prob = (months - best_timeline)/(likely_timeline - best_timeline)
+			else:
+				months = likely_timeline
+				break
+		else:
+			if worst_timeline - likely_timeline > 0:
+				prob = (worst_timeline - months)/(worst_timeline - likely_timeline)
+			else:
+				months = likely_timeline
+				break
+				
+	return months
+	
 #-------------------------------------------------------------------
 
 def getYearMonth(aDate):
@@ -1111,8 +1171,8 @@ def initialiseVaccine(vaccine, params, startPhase = 0, thisMonth = 0, fundingKey
 			vaccine['start'] = [0] * len(params['phases'])
 			vaccine['end'] = [0] * len(params['phases'])
 			vaccine['status'] = ''
-			vaccine['overall_pos'] = 1.0
-
+		
+		vaccine['overall_pos'] = 1.0
 		for phase in range(startPhase):
 			vaccine['overall_pos'] = vaccine['overall_pos'] * vaccine['pos'][phase]
 		
@@ -1174,7 +1234,7 @@ def initialiseVaccine(vaccine, params, startPhase = 0, thisMonth = 0, fundingKey
 			# If the start is not set - set it according to the overlap category
 								
 			if int(vaccine['start_dates'][phase]) == 0 and phase > 0:
-				vaccine['start'][phase] = getPhaseStart(vaccine, phase,params)
+				vaccine['start'][phase] = getPhaseStart(vaccine, phase, params)
 				if vaccine['start'][phase] <= thisMonth: vaccine['start'][phase] = thisMonth + 1
 				
 			# Calculate the end of the phase
@@ -1183,7 +1243,26 @@ def initialiseVaccine(vaccine, params, startPhase = 0, thisMonth = 0, fundingKey
 				vaccine['end'][phase] = vaccine['start'][phase] + getPhaseLength(vaccine, phase, params)
 				# Don't allow any before this month (otherwise we would have set the date already)
 				if vaccine['end'][phase] <= thisMonth: vaccine['end'][phase] = thisMonth + 1
-									
+				
+		# Set EUA parameters
+		if vaccine['eua_date'] > 0:
+			(year, month) = getYearMonth(int(vaccine['eua_date']))
+			months = month - params['this_month'] + 12*(year - params['this_year'])
+			vaccine['eua_end'] = month
+			vaccine['status'] = 'EUA'
+			vaccine['end'][1] = month
+			vaccine['end'][2] = month
+		elif vaccine['phase3_preliminary'] > 0:	# Set date from preliminary results date
+			(year, month) = getYearMonth(int(vaccine['phase3_preliminary']))
+			months = month - params['this_month'] + 12*(year - params['this_year'])
+			vaccine['eua_end'] = months + params['eua_preliminary']
+			if vaccine['eua_end'] <= thisMonth: vaccine['eua_end'] = thisMonth + 1
+		else:									# Set date from start of phase III
+			vaccine['eua_end'] = vaccine['start'][3] + getTriangle(params['eua_best'], params['eua_likely'], params['eua_worst'])
+			if vaccine['eua_end'] <= thisMonth: vaccine['eua_end'] = thisMonth + 1
+		
+		vaccine['eua_success'] = params['eua_success']
+			
 #-----------------------------------------------------------------
 
 def isActive(vaccine, phase, month):
@@ -1305,6 +1384,7 @@ def multiplyPos(pos, multiplier):
 def updateApproval(approved, vaccines, params):
 
 	# Update approval chances of other vaccines
+
 	if len(approved) < params['approval_limit']: return
 
 	for j in range(len(vaccines)):
@@ -1320,6 +1400,25 @@ def updateApproval(approved, vaccines, params):
 		vaccines[j]['overall_pos'] = 1.0
 		for phase in range(len(params['phases'])):
 			vaccines[j]['overall_pos'] = vaccines[j]['overall_pos'] * vaccines[j]['pos'][phase]
+			
+#-------------------------------------------------------------------
+		
+def updateEuApproval(euapproved, vaccines, params):
+
+	# Update EU approval chances of other vaccines
+
+	if len(euapproved) < params['eua_limit']: return
+
+	for j in range(len(vaccines)):
+		if vaccines[j]['status'] == 'Failed' or vaccines[j]['status'] == 'EUA' or vaccines[j]['status'] == 'Approved': continue
+		oldPos = vaccines[j]['eua_success']
+		oldTimeline = vaccines[j]['eua_end'] - vaccines[j]['start'][3]
+		
+		newPos = multiplyPos(oldPos, params['eua_pos'])		
+		newTimeline = oldTimeline * params['approval_timeline']
+	
+		vaccines[j]['eua_success'] = newPos
+		vaccines[j]['eua_end'] = vaccines[j]['start'][3] + int(newTimeline + 0.5)
 			
 #-------------------------------------------------------------------
 		
